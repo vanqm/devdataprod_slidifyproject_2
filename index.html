@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Slidify Application about the length of odontoblasts (teeth)</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Slidify Application about the length of odontoblasts (teeth)">
+  <meta name="author" content="Van Mai">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Slidify Application about the length of odontoblasts (teeth)</h1>
+    <h2>The length of teeth vs Vitamin C (supplement + dose)</h2>
+    <p>Van Mai<br/>Data Scientist</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Application Description</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Analyze the ToothGrowth data in the R datasets package.</li>
+<li>The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>ui.R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>library(shiny)
+library(jsonlite)
+
+shinyUI(
+    pageWithSidebar(
+        headerPanel(&quot;The length of odontoblasts (teeth)&quot;),
+        sidebarPanel(
+            h5(&#39;The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of
+Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).&#39;),
+            radioButtons(&quot;dose&quot;, &#39;Levels of Vitamin C&#39;, 
+                         c(&quot;0.5 mg&quot; = &quot;0.5&quot;,
+                         &quot;1.0 mg&quot; = &quot;1&quot;,
+                         &quot;2.0 mg&quot; = &quot;2&quot;)),
+            radioButtons(&quot;supp&quot;, &#39;Method&#39;, 
+                         c(&quot;Orange Juice&quot;                  = &quot;OJ&quot;,
+                           &quot;Ascorbic Acid&quot;                 = &quot;VC&quot;,
+                           &quot;Orange Juice vs Ascorbic Acid&quot; = &quot;OJ_VC&quot;))
+            ),
+        mainPanel(  plotOutput(&#39;newHist&#39;)   )
+        )
+    )
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>server.R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code>library(shiny)
+library(jsonlite)
+data(ToothGrowth)
+
+shinyServer(
+  function(input, output){
+    output$newHist &lt;- renderPlot({
+      dose &lt;- input$dose; data &lt;- ToothGrowth[ToothGrowth$dose == dose, ]
+      supp &lt;- input$supp; numPlot &lt;- 1
+      if (supp == &#39;OJ&#39;){  data &lt;- data[data$supp == &#39;OJ&#39;, ]   } 
+      else if(supp == &#39;VC&#39;) { data &lt;- data[data$supp == &#39;VC&#39;, ]   } 
+      else {
+        numPlot &lt;- 2
+        dataOJ &lt;- data[data$supp == &#39;OJ&#39;, ]
+        dataVC &lt;- data[data$supp == &#39;VC&#39;, ]
+      }
+      par(mfrow = c(2, numPlot))
+      if(numPlot == 1) {
+        barplot(data$len, ylab = &#39;Length of teeth&#39;, ylim = c(0, 30), col = c(1:10), main = &quot;Length of teeth vs Supp&quot;)
+      } else {
+        barplot(dataOJ$len, ylab = &#39;Length of teeth&#39;, ylim = c(0, 30), col = c(1:10), main = &quot;Length of teeth vs Orange Juice&quot;)
+        barplot(dataVC$len, ylab = &#39;Length of teeth&#39;, ylim = c(0, 30), col = c(1:10), main = &quot;Length of teeth vs Ascorbic Acid&quot;)
+      }   
+    })
+  })
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>A Result</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Shiny app is published on <a href="https://vanqm.shinyapps.io/course_project">https://vanqm.shinyapps.io/course_project</a></p>
+
+<p><img src="assets/img/shinyapp_example.png" alt="The example of shiny app"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Application Description'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='ui.R'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='server.R'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='A Result'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
